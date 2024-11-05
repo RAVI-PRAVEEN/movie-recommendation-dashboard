@@ -3,12 +3,15 @@
 <head>
     <title>TMDB WDC</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/tableauwdc@1.2.0/tableauwdc.min.js"></script> <!-- Tableau WDC library -->
+    <script src="https://connectors.tableau.com/libs/tableauwdc-2.4.latest.js"></script> <!-- Load Tableau WDC library -->
     <script type="text/javascript">
-        (function() {
+        // Wait for the document to be fully loaded
+        document.addEventListener("DOMContentLoaded", function() {
+            // Create the connector
             var myConnector = tableau.makeConnector();
             tableau.registerConnector(myConnector);
 
+            // Define the schema
             myConnector.getSchema = function(schemaCallback) {
                 var cols = [
                     { id: "id", dataType: tableau.dataTypeEnum.int },
@@ -27,6 +30,7 @@
                 schemaCallback([tableSchema]);
             };
 
+            // Define the data retrieval
             myConnector.getData = function(table, doneCallback) {
                 var apiKey = "0ceda3df59bfbe633e321cef09a71e8d"; // Your TMDB API key
                 var url = `https://api.themoviedb.org/3/movie/popular?api_key=${apiKey}&language=en-US&page=1`;
@@ -48,10 +52,8 @@
                     })
                     .catch(error => console.error("Error fetching data:", error));
             };
-        })();
 
-        // Ensure the DOM is fully loaded before attaching event listeners
-        document.addEventListener("DOMContentLoaded", function() {
+            // Attach event listener to the button
             document.getElementById("fetchData").addEventListener("click", function() {
                 tableau.connectionName = "TMDB Popular Movies"; // Name the connection
                 tableau.submit(); // This triggers the WDC process
